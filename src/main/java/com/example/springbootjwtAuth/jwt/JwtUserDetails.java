@@ -1,14 +1,13 @@
 package com.example.springbootjwtAuth.jwt;
 
+import com.example.springbootjwtAuth.models.entities.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class JwtUserDetails implements UserDetails {
 
@@ -20,13 +19,23 @@ public class JwtUserDetails implements UserDetails {
     private final Collection<? extends GrantedAuthority> authorities;
 
 
-    public JwtUserDetails(Long id, String username, String password, String role) {
+    public JwtUserDetails(Long id, String username, String password, Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.username = username;
         this.password = password;
-        List<SimpleGrantedAuthority> authorityList = new ArrayList<>();
-        authorityList.add(new SimpleGrantedAuthority(role));
-        this.authorities = authorityList;
+        this.authorities = authorities;
+    }
+
+    public static JwtUserDetails build(User user){
+        List<GrantedAuthority> authorities = user.getRoles().stream()
+                .map(role -> new SimpleGrantedAuthority(role.getName()))
+                .collect(Collectors.toList());
+        return new JwtUserDetails(
+                user.getId(),
+                user.getUsername(),
+                user.getPassword(),
+                authorities
+        );
     }
 
     @Override
