@@ -37,7 +37,9 @@ public class JwtTokenUtil {
         return getClaimFromToken(token, Claims::getIssuedAt);
     }
     public Date getExpirationDateFromToken(String token){
-        return getClaimFromToken(token,Claims::getExpiration);
+        //return getClaimFromToken(token,Claims::getExpiration);
+        Claims claims = getAllClaimsFromToken(token);
+        return getClaimFromToken(token, (value) -> value.getExpiration());
     }
 
     public <T> T getClaimFromToken(String token, Function<Claims, T> function){
@@ -82,7 +84,6 @@ public class JwtTokenUtil {
 
         return Jwts.builder().setClaims(claims).signWith(SignatureAlgorithm.HS512, secret).compact();
     }
-
 
     public Boolean validateToken(String token, UserDetails userDetails) {
         JwtUserDetails user = (JwtUserDetails) userDetails;

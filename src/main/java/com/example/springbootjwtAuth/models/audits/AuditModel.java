@@ -31,7 +31,7 @@ public abstract class AuditModel implements Serializable {
 
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "deleted_at", nullable = false)
+    @Column(name = "deleted_at")
     private Date deletedAt = new Date();
 
 
